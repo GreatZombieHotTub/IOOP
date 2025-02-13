@@ -1,8 +1,6 @@
 // Student class
 
-import java.util.Scanner;
-
-class Student {
+public class Student {
     private String name;
 
     public Student(String name) {
@@ -21,7 +19,7 @@ class Student {
                 initials += part.charAt(0);
             }
         }
-        return initials;
+        return initials.toUpperCase();
     }
 
     public String removeWhitespace() {
@@ -32,68 +30,74 @@ class Student {
         return name.contains(substring);
     }
 
-    public static int compareNames(Student s1, Student s2) {
-        return s1.getName().compareToIgnoreCase(s2.getName());
-    }
-    
-    public String toString() {
-        return name;
-    }
-}
-
-public class Program25 {
-	public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        Student[] students = new Student[100];
-        int count = 0;
-
-        System.out.println("Enter student names (type 'done' to finish):");
-        while (true) {
-            String input = sc.nextLine();
-            if (input.equalsIgnoreCase("done")) {
-                break;
-            }
-            students[count++] = new Student(input);
-        }
-
-        System.out.println("\nStudent Details:");
-        for (int i = 0; i < count; i++) {
-            System.out.println(students[i]);
-        }
-
-        System.out.println("\nInitials of Students:");
-        for (int i = 0; i < count; i++) {
-            System.out.println(students[i].getName() + ": " + students[i].extractInitials());
-        }
-
-        System.out.println("\nNames without Whitespace:");
-        for (int i = 0; i < count; i++) {
-            System.out.println(students[i].getName() + ": " + students[i].removeWhitespace());
-        }
-        
-        System.out.print("\nEnter a substring to search: ");
-        String substring = sc.nextLine();
-        System.out.println("\nStudents containing substring \"" + substring + "\":");
-        for (int i = 0; i < count; i++) {
-            if (students[i].containsSubstring(substring)) {
-                System.out.println(students[i]);
-            }
-        }
-
-        for (int i = 0; i < count - 1; i++) {
-            for (int j = i + 1; j < count; j++) {
-                if (Student.compareNames(students[i], students[j]) > 0) {
-                    Student temp = students[i];
-                    students[i] = students[j];
-                    students[j] = temp;
+    // Manual sorting method (Bubble Sort)
+    public static void sortStudents(Student[] students) {
+        int n = students.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (students[j].getName().compareToIgnoreCase(students[j + 1].getName()) > 0) {
+                    // Swap students[j] and students[j + 1]
+                    Student temp = students[j];
+                    students[j] = students[j + 1];
+                    students[j + 1] = temp;
                 }
             }
         }
-        System.out.println("\nStudents sorted alphabetically:");
-        for (int i = 0; i < count; i++) {
-            System.out.println(students[i]);
+    }
+}
+
+
+import java.util.Scanner;
+
+public class StudentMain {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Read number of students
+        System.out.print("Enter the number of students: ");
+        int numStudents = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        // Create an array to store student objects
+        Student[] students = new Student[numStudents];
+
+        for (int i = 0; i < numStudents; i++) {
+            System.out.print("Enter student " + (i + 1) + " name: ");
+            String name = scanner.nextLine();
+            students[i] = new Student(name);
         }
 
-        sc.close();
-	}
+        // Display student details
+        System.out.println("\nStudent Details:");
+        for (Student student : students) {
+            System.out.println("Name: " + student.getName());
+        }
+
+        // Demonstrate extractInitials() and removeWhitespace()
+        System.out.println("\nStudent Initials and Names Without Whitespace:");
+        for (Student student : students) {
+            System.out.println("Original: " + student.getName());
+            System.out.println("Initials: " + student.extractInitials());
+            System.out.println("Without Whitespace: " + student.removeWhitespace());
+        }
+
+        // Find students with a particular substring in their name
+        System.out.print("\nEnter a substring to search for in student names: ");
+        String substring = scanner.nextLine();
+        System.out.println("Students containing '" + substring + "':");
+        for (Student student : students) {
+            if (student.containsSubstring(substring)) {
+                System.out.println(student.getName());
+            }
+        }
+
+        // Sort students alphabetically
+        Student.sortStudents(students);
+        System.out.println("\nStudents sorted alphabetically:");
+        for (Student student : students) {
+            System.out.println(student.getName());
+        }
+
+        scanner.close();
+    }
 }
