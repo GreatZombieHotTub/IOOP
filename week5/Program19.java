@@ -1,93 +1,86 @@
 // Enhance the student class
 
-class Student {
-    class Subject {
-        private String subjectName;
-        private int marks;
-
-        public Subject(String subjectName) {
-            this.subjectName = subjectName;
-            this.marks = 0;
-        }
-
-        public void assignMarks(int marks) {
-            this.marks = marks;
-        }
-
-        public void displaySubject() {
-            System.out.println("Subject: " + subjectName + ", Marks: " + marks);
-        }
-
-        public int getMarks() {
-            return marks;
-        }
-    }
-
+public class Student {
+    private String name;
     private Subject[] subjects;
     private int subjectCount;
 
-    public Student(int maxSubjects) {
-        subjects = new Subject[maxSubjects];
-        subjectCount = 0;
+    public Student(String name, int maxSubjects) {
+        this.name = name;
+        this.subjects = new Subject[maxSubjects];
     }
 
-    public void addSubject(String subjectName) {
-        if (subjectCount < subjects.length) {
-            subjects[subjectCount] = new Subject(subjectName);
-            subjectCount++;
+    // Inner class Subject
+    private class Subject {
+        String subjectName;
+        int marks;
+
+        Subject(String subjectName) {
+            this.subjectName = subjectName;
         }
-		else {
-            System.out.println("Cannot add more subjects. Maximum limit reached.");
+
+        void setMarks(int marks) {
+            this.marks = marks;
+        }
+
+        void display() {
+            System.out.println(subjectName + ": " + marks + " marks");
         }
     }
 
-    public void assignMarks(String subjectName, int marks) {
-        for (int i = 0; i < subjectCount; i++) {
-            if (subjects[i].subjectName.equals(subjectName)) {
-                subjects[i].assignMarks(marks);
-                return;
-            }
-        }
-        System.out.println("Subject not found: " + subjectName);
+    void addSubject(String subjectName) {
+        if (subjectCount < subjects.length) 
+            subjects[subjectCount++] = new Subject(subjectName);
     }
 
-    public int calcTotal() {
+    void assignMarks(int index, int marks) {
+        if (index < subjectCount) subjects[index].setMarks(marks);
+    }
+
+    void displaySubjects() {
+        System.out.println("Subjects for " + name + ":");
+        for (int i = 0; i < subjectCount; i++) subjects[i].display();
+    }
+
+    int calculateTotal() {
         int total = 0;
-        for (int i = 0; i < subjectCount; i++) {
-            total += subjects[i].getMarks();
-        }
+        for (int i = 0; i < subjectCount; i++) total += subjects[i].marks;
         return total;
     }
 
-    public float calcAvg() {
-        if (subjectCount == 0) {
-            return 0f;
-        }
-        return (float) calcTotal() / subjectCount;
-    }
-
-    public void displaySubjects() {
-        for (int i = 0; i < subjectCount; i++) {
-            subjects[i].displaySubject();
-        }
+    double calculateAverage() {
+        return subjectCount == 0 ? 0 : (double) calculateTotal() / subjectCount;
     }
 }
 
-public class Program19 {
+
+import java.util.Scanner;
+
+public class StudentMain {
     public static void main(String[] args) {
-    	Student student = new Student(3);
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter student name: ");
+        Student student = new Student(sc.nextLine(), 5);
 
-        student.addSubject("Maths");
-        student.addSubject("Physics");
-        student.addSubject("Chemistry");
+        System.out.print("Enter number of subjects: ");
+        int numSubjects = sc.nextInt();
+        sc.nextLine();
 
-        student.assignMarks("Maths", 90);
-        student.assignMarks("Physics", 85);
-        student.assignMarks("Chemistry", 78);
+        for (int i = 0; i < numSubjects; i++) {
+            System.out.print("Enter subject name: ");
+            student.addSubject(sc.nextLine());
+        }
 
+        for (int i = 0; i < numSubjects; i++) {
+            System.out.print("Enter marks for subject " + (i + 1) + ": ");
+            student.assignMarks(i, sc.nextInt());
+        }
+
+        System.out.println("\nStudent Report:");
         student.displaySubjects();
+        System.out.println("Total Marks: " + student.calculateTotal());
+        System.out.println("Average Marks: " + student.calculateAverage());
 
-        System.out.println("Total Marks: " + student.calcTotal());
-        System.out.println("Average Marks: " + student.calcAvg());
+        sc.close();
     }
 }
